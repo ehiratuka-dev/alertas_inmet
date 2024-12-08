@@ -1,6 +1,6 @@
 {
   "domain": "alertas_inmet",
-  "name": "Integration blueprint",
+  "name": "Alertas INMET",
   "codeowners": [
     "@ludeeus"
   ],

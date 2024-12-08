@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
         key="alertas_inmet",
-        name="Integration Blueprint Binary Sensor",
+        name="Alertas INMET Binary Sensor",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
     ),
 )
