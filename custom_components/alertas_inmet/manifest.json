@@ -1,0 +1,12 @@
+{
+  "domain": "alertas_inmet",
+  "name": "Integration blueprint",
+  "codeowners": [
+    "@ludeeus"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/ehiratuka-dev/alertas_inmet",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/ehiratuka-dev/alertas_inmet/issues",
+  "version": "0.0.0"
+}
