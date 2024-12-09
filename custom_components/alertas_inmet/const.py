@@ -1,8 +1,26 @@
-"""Constants for alertas_inmet."""
+"""Sample API Client."""
 
-from logging import Logger, getLogger
+import logging
+from datetime import timedelta
 
-LOGGER: Logger = getLogger(__package__)
+from homeassistant.const import Platform
 
-DOMAIN = "alertas_inmet"
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
+_LOGGER = logging.getLogger(__name__)
+
+DOMAIN = "inmet_alerts"
+PLATFORMS = [Platform.BINARY_SENSOR]
+CONFIG_USER_STEP = "user"
+
+DEFAULT_ICON = "mdi:alert"
+DEFAULT_RADIUS = 500.0
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)
+
+CONF_ENTRY_TITLE = "Alertas Meteorológicos INMET"
+DEVICE_TITLE = "Alerta INMET"
+MANUFACTURER_TITLE = "INMET"
+
+URL = "https://apiprevmet3.inmet.gov.br/avisos/ativos"
+
+ATTR_ID = "id_aviso"
+ATTR_SEVERIDADE = "severidade"
+ATTR_DESCRICAO = "descricao"

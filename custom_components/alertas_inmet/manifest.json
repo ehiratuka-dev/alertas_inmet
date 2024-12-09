@@ -1,12 +1,18 @@
 {
-  "domain": "alertas_inmet",
+  "domain": "inmet_alerts",
   "name": "Alertas INMET",
   "codeowners": [
-    "@ludeeus"
+    "@ehiratuka-dev"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/ehiratuka-dev/alertas_inmet",
+  "dependencies": [
+    "zone"
+  ],
+  "documentation": "",
+  "integration_type": "service",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/ehiratuka-dev/alertas_inmet/issues",
-  "version": "0.0.0"
+  "requirements": [
+    "shapely==2.0.6"
+  ],
+  "version": "0.1.0"
 }

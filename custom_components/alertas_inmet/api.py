@@ -1,101 +1,79 @@
 """Sample API Client."""
 
-from __future__ import annotations
-
-import socket
+import json
+from datetime import UTC, datetime
+from http import HTTPStatus
 from typing import Any
 
-import aiohttp
-import async_timeout
+import requests
+from homeassistant.core import HomeAssistant
+from shapely.geometry import Point, shape
+
+from .const import _LOGGER, ATTR_DESCRICAO, ATTR_ID, ATTR_SEVERIDADE, URL
 
 
-class IntegrationBlueprintApiClientError(Exception):
-    """Exception to indicate a general API error."""
-
-
-class IntegrationBlueprintApiClientCommunicationError(
-    IntegrationBlueprintApiClientError,
-):
-    """Exception to indicate a communication error."""
-
-
-class IntegrationBlueprintApiClientAuthenticationError(
-    IntegrationBlueprintApiClientError,
-):
-    """Exception to indicate an authentication error."""
-
-
-def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
-    """Verify that the response is valid."""
-    if response.status in (401, 403):
-        msg = "Invalid credentials"
-        raise IntegrationBlueprintApiClientAuthenticationError(
-            msg,
-        )
-    response.raise_for_status()
-
-
-class IntegrationBlueprintApiClient:
+class InmetAPI:
     """Sample API Client."""
 
-    def __init__(
-        self,
-        username: str,
-        password: str,
-        session: aiohttp.ClientSession,
-    ) -> None:
+    def __init__(self, hass: HomeAssistant) -> None:
         """Sample API Client."""
-        self._username = username
-        self._password = password
-        self._session = session
+        self.hass = hass
 
-    async def async_get_data(self) -> Any:
-        """Get data from the API."""
-        return await self._api_wrapper(
-            method="get",
-            url="https://jsonplaceholder.typicode.com/posts/1",
+    def search_alerts(self, latitude: float, longitude: float) -> dict[str, Any]:
+        """Sample API Client."""
+        response = requests.get(URL, timeout=5)
+        if response.status_code == HTTPStatus.ACCEPTED:
+            data = response.json()
+            _LOGGER.debug("Dados obtidos com sucesso.")
+            _LOGGER.info(data)
+
+            for alert in data["hoje"]:
+                _LOGGER.debug(f"Testando contra aviso: { alert[ATTR_ID]}")
+                if self.is_alert_inside_zone(
+                    alert["poligono"], latitude, longitude
+                ) and self.is_alert_inside_time(alert["inicio"], alert["fim"]):
+                    return {
+                        ATTR_ID: alert[ATTR_ID],
+                        ATTR_SEVERIDADE: alert[ATTR_SEVERIDADE],
+                        ATTR_DESCRICAO: alert[ATTR_DESCRICAO],
+                    }
+
+        msg = f"Dados obtidos com sucesso. Codigo: {response.status_code}"
+        _LOGGER.debug(msg)
+
+        return {
+            "id_aviso": None,
+            "severidade": None,
+            "descricao": None,
+        }
+
+    async def call_alerts(
+        self, hass: HomeAssistant, latitude: float, longitude: float
+    ) -> dict[str, Any]:
+        """Sample API Client."""
+        return await hass.async_add_executor_job(
+            self.search_alerts, latitude, longitude
         )
 
-    async def async_set_title(self, value: str) -> Any:
-        """Get data from the API."""
-        return await self._api_wrapper(
-            method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"title": value},
-            headers={"Content-type": "application/json; charset=UTF-8"},
-        )
+    def is_alert_inside_time(self, inicio: str, fim: str) -> bool | None:
+        """Sample API Client."""
+        formato = "%Y-%m-%d %H:%M"
 
-    async def _api_wrapper(
-        self,
-        method: str,
-        url: str,
-        data: dict | None = None,
-        headers: dict | None = None,
-    ) -> Any:
-        """Get information from the API."""
-        try:
-            async with async_timeout.timeout(10):
-                response = await self._session.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    json=data,
-                )
-                _verify_response_or_raise(response)
-                return await response.json()
+        inicio_dt = datetime.strptime(inicio, formato).replace(tzinfo=UTC)
+        fim_dt = datetime.strptime(fim, formato).replace(tzinfo=UTC)
+        agora_dt = datetime.now(tz=UTC)
 
-        except TimeoutError as exception:
-            msg = f"Timeout error fetching information - {exception}"
-            raise IntegrationBlueprintApiClientCommunicationError(
-                msg,
-            ) from exception
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            msg = f"Error fetching information - {exception}"
-            raise IntegrationBlueprintApiClientCommunicationError(
-                msg,
-            ) from exception
-        except Exception as exception:  # pylint: disable=broad-except
-            msg = f"Something really wrong happened! - {exception}"
-            raise IntegrationBlueprintApiClientError(
-                msg,
-            ) from exception
+        _LOGGER.debug(f"{ inicio_dt }, { agora_dt }, { fim_dt }")
+        return inicio_dt <= agora_dt <= fim_dt
+
+    def is_alert_inside_zone(
+        self, polygon: str, latitude: float, longitude: float
+    ) -> bool:
+        """Sample API Client."""
+        data_polygon = shape(json.loads(polygon))
+        data_point = Point(longitude, latitude)
+        is_inside = data_point.within(data_polygon)
+
+        _LOGGER.debug(f"is inside { is_inside }")
+
+        return is_inside
