@@ -7,7 +7,7 @@ from homeassistant.const import Platform
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "inmet_alerts"
+DOMAIN = "alertas_inmet"
 PLATFORMS = [Platform.BINARY_SENSOR]
 CONFIG_USER_STEP = "user"
 
