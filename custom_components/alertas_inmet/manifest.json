@@ -9,6 +9,7 @@
     "zone"
   ],
   "documentation": "https://github.com/ehiratuka-dev/alertas_inmet/wiki",
+  "issue_tracker": "https://github.com/ehiratuka-dev/alertas_inmet/issues",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "requirements": [
