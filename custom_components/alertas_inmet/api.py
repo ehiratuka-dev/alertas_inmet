@@ -25,6 +25,7 @@ class InmetAPI:
         if response.status_code == HTTPStatus.ACCEPTED:
             data = response.json()
             _LOGGER.debug("Dados obtidos com sucesso.")
+            _LOGGER.debug("Mostrando.")
             _LOGGER.info(data)
 
             for alert in data["hoje"]:

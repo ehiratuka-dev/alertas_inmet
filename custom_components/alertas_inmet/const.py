@@ -22,5 +22,5 @@ MANUFACTURER_TITLE = "INMET"
 URL = "https://apiprevmet3.inmet.gov.br/avisos/ativos"
 
 ATTR_ID = "id_aviso"
-ATTR_SEVERIDADE = "severidade"
+ATTR_SEVERIDADE = "severidade_ids"
 ATTR_DESCRICAO = "descricao"
